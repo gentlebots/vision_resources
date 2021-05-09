@@ -18,16 +18,48 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 find_package(ros2_knowledge_graph REQUIRED)
 find_package(vision_msgs REQUIRED)
 find_package(gb_visual_detection_3d_msgs REQUIRED)
 
 set(dependencies
   rclcpp
+  rclcpp_lifecycle
+  lifecycle_msgs
   ros2_knowledge_graph
   vision_msgs
   gb_visual_detection_3d_msgs
 )
+
+include_directories(
+  include
+)
+
+add_library(
+  PerceptionKnowledge SHARED src/${PROJECT_NAME}/PerceptionKnowledge.cpp
+)
+ament_target_dependencies(PerceptionKnowledge ${dependencies})
+
+add_executable(perception_knowledge_node src/perception_knowledge_node.cpp)
+ament_target_dependencies(perception_knowledge_node ${dependencies})
+target_link_libraries(perception_knowledge_node PerceptionKnowledge)
+
+install(TARGETS
+  PerceptionKnowledge
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+# ament_export_include_directories(include)
+# ament_export_libraries(PerceptionKnowledge)
+# ament_export_dependencies(${dependencies})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
