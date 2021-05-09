@@ -14,7 +14,9 @@
 
 #include "perception_knowledge/PerceptionKnowledge.hpp"
 
-#include <memory>
+enum {
+  RateFreq = 2,  // Hz
+};
 
 int
 main(int argc, char ** argv)
@@ -23,6 +25,14 @@ main(int argc, char ** argv)
 
   auto node = std::make_shared
     <perception_knowledge::PerceptionKnowledge>("perception_knowledge_node");
+
+  rclcpp::Rate loop_rate(RateFreq);
+
+  node->configure();
+  while (rclcpp::ok()) {
+    node->update();
+    loop_rate.sleep();
+  }
 
   rclcpp::shutdown();
 

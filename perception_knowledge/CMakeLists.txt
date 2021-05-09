@@ -48,6 +48,7 @@ target_link_libraries(perception_knowledge_node PerceptionKnowledge)
 
 install(TARGETS
   PerceptionKnowledge
+  perception_knowledge_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
@@ -56,6 +57,8 @@ install(TARGETS
 install(DIRECTORY include/
   DESTINATION include/
 )
+
+install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME}/)
 
 # ament_export_include_directories(include)
 # ament_export_libraries(PerceptionKnowledge)
