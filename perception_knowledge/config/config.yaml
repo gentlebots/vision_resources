@@ -1,0 +1,5 @@
+perception_knowledge_node:
+  ros__parameters:
+    messages_type: vision_msgs  # gb_visual_detection_3d_msgs
+    vision_msgs_topic: /vision_msgs_topic
+    gb_detections_msgs_topic: /gb_detections_topic
