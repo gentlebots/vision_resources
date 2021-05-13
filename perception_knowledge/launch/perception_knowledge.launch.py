@@ -18,13 +18,15 @@ from launch.actions import SetEnvironmentVariable
 from launch_ros.actions import Node
 import os
 
-params_file = '/config/config.yaml'
+params_file = "config/config.yaml"
 
 def generate_launch_description():
   # Load Parameters
 
   pkg_dir = get_package_share_directory('perception_knowledge')
   config_file_path = os.path.join(pkg_dir, params_file)
+  print(pkg_dir)
+  print(config_file_path)
 
   stdout_use_envvar = SetEnvironmentVariable(
     'RCUTILS_LOGGING_USE_STDOUT', '1')
@@ -38,7 +40,8 @@ def generate_launch_description():
     package='perception_knowledge',
     executable='perception_knowledge_node',
     name='perception_knowledge_node',
-    output='screen'
+    output='screen',
+    parameters=[config_file_path]
   )
 
   ld = LaunchDescription()
