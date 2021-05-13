@@ -15,6 +15,7 @@
 #include <iostream>
 #include "perception_knowledge/PerceptionKnowledge.hpp"
 
+using std::placeholders::_1;
 using CallbackReturnT =
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -24,13 +25,18 @@ namespace perception_knowledge
 PerceptionKnowledge::PerceptionKnowledge(std::string node_name)
 : LifecycleNode(node_name)
 {
-  std::cout << "Hello World" << std::endl;
+  // Declare the parameters
+
+  this->declare_parameter<std::string>("messages_type", "vision_msgs");
+  this->declare_parameter<std::string>(
+    "detections_topic", "/vision_msgs_topic");
 }
 
 CallbackReturnT
 PerceptionKnowledge::on_configure(const rclcpp_lifecycle::State & state)
 {
-  RCLCPP_WARN(this->get_logger(), "[%s] Configuring from [%s] state...",
+  RCLCPP_WARN(
+    this->get_logger(), "[%s] Configuring from [%s] state...",
     this->get_name(), state.label().c_str());
 
   // Get the Parameters
@@ -38,6 +44,18 @@ PerceptionKnowledge::on_configure(const rclcpp_lifecycle::State & state)
   getParams();
 
   // Set the Subscribers and Publishers
+
+  setSubscribers();
+
+  return CallbackReturnT::SUCCESS;
+}
+
+CallbackReturnT
+PerceptionKnowledge::on_activate(const rclcpp_lifecycle::State & state)
+{
+  RCLCPP_WARN(
+    this->get_logger(), "[%s] Activating from [%s] state...",
+    this->get_name(), state.label().c_str());
 
   return CallbackReturnT::SUCCESS;
 }
@@ -49,9 +67,30 @@ PerceptionKnowledge::update()
 }
 
 void
-PerceptionKnowledge::getParams()
+PerceptionKnowledge::setSubscribers()
 {
-
+  if (msgsType_ == "vision_msgs") {
+    visionMsgsSubscriber_ =
+      this->create_subscription<vision_msgs::msg::BoundingBox3D>(
+        detectionsTopic_, rclcpp::SensorDataQoS(),
+        std::bind(&PerceptionKnowledge::visionsMsgsCallback, this, std::placeholders::_1));
+  }
+  else if (msgsType_ == "gb_visual_detection_3d_msgs") {
+    // Subscribe to gb messages
+  }
 }
 
+void
+PerceptionKnowledge::visionsMsgsCallback(
+  const vision_msgs::msg::BoundingBox3D::SharedPtr msg)
+{
+  RCLCPP_INFO(this->get_logger(), "Received!");
+}
+
+void
+PerceptionKnowledge::getParams()
+{
+  this->get_parameter("messages_type", msgsType_);
+  this->get_parameter("detections_topic", detectionsTopic_);
+}
 } // namespace perception_knowledge

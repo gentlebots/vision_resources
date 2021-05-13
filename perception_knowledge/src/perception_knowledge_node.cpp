@@ -14,7 +14,8 @@
 
 #include "perception_knowledge/PerceptionKnowledge.hpp"
 
-enum {
+enum
+{
   RateFreq = 2,  // Hz
 };
 
@@ -29,7 +30,10 @@ main(int argc, char ** argv)
   rclcpp::Rate loop_rate(RateFreq);
 
   node->configure();
+  node->activate();
   while (rclcpp::ok()) {
+    rclcpp::spin_some(node->get_node_base_interface());
+
     node->update();
     loop_rate.sleep();
   }
