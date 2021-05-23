@@ -63,9 +63,8 @@ PerceptionKnowledge::on_activate(const rclcpp_lifecycle::State & state)
 void
 PerceptionKnowledge::update()
 {
-  for (auto det : visionDetections_)
-  {
-    printf("%s\n", det.object_name);
+  for (auto det : visionDetections_) {
+    printf("%s\n", det.object_name.c_str());
   }
   printf("\n----------\n");
 }
@@ -76,10 +75,9 @@ PerceptionKnowledge::setSubscribers()
   if (msgsType_ == "vision_msgs") {
     visionMsgsSubscriber_ =
       this->create_subscription<vision_msgs::msg::Detection3DArray>(
-        detectionsTopic_, rclcpp::SensorDataQoS(),
-        std::bind(&PerceptionKnowledge::visionsMsgsCallback, this, std::placeholders::_1));
-  }
-  else if (msgsType_ == "gb_visual_detection_3d_msgs") {
+      detectionsTopic_, rclcpp::SensorDataQoS(),
+      std::bind(&PerceptionKnowledge::visionsMsgsCallback, this, std::placeholders::_1));
+  } else if (msgsType_ == "gb_visual_detection_3d_msgs") {
     // Subscribe to gb messages
   }
 }
@@ -99,8 +97,7 @@ PerceptionKnowledge::visionsMsgsCallback(
   // Set de new objects detected
 
   ObjectType obj;
-  for (auto detection : msg->detections)
-  {
+  for (auto detection : msg->detections) {
     obj.object_name = detection.tracking_id;
     obj.position = detection.bbox.center.position;
     obj.orientation = detection.bbox.center.orientation;
