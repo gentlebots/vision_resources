@@ -63,7 +63,11 @@ PerceptionKnowledge::on_activate(const rclcpp_lifecycle::State & state)
 void
 PerceptionKnowledge::update()
 {
-  RCLCPP_INFO(this->get_logger(), "Update!");
+  for (auto det : visionDetections_)
+  {
+    printf("%s\n", det.object_name);
+  }
+  printf("\n----------\n");
 }
 
 void
@@ -71,7 +75,7 @@ PerceptionKnowledge::setSubscribers()
 {
   if (msgsType_ == "vision_msgs") {
     visionMsgsSubscriber_ =
-      this->create_subscription<vision_msgs::msg::BoundingBox3D>(
+      this->create_subscription<vision_msgs::msg::Detection3DArray>(
         detectionsTopic_, rclcpp::SensorDataQoS(),
         std::bind(&PerceptionKnowledge::visionsMsgsCallback, this, std::placeholders::_1));
   }
@@ -82,9 +86,27 @@ PerceptionKnowledge::setSubscribers()
 
 void
 PerceptionKnowledge::visionsMsgsCallback(
-  const vision_msgs::msg::BoundingBox3D::SharedPtr msg)
+  const vision_msgs::msg::Detection3DArray::SharedPtr msg)
 {
-  RCLCPP_INFO(this->get_logger(), "Received!");
+  // Remove the old objects
+
+  visionDetections_.clear();
+
+  // Save the frame id
+
+  fameId_ = msg->header.frame_id;
+
+  // Set de new objects detected
+
+  ObjectType obj;
+  for (auto detection : msg->detections)
+  {
+    obj.object_name = detection.tracking_id;
+    obj.position = detection.bbox.center.position;
+    obj.orientation = detection.bbox.center.orientation;
+
+    visionDetections_.push_back(obj);
+  }
 }
 
 void
