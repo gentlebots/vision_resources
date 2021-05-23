@@ -17,13 +17,24 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
-#include <vision_msgs/msg/bounding_box3_d.hpp>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
+#include <vision_msgs/msg/detection3_d_array.hpp>
 
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace perception_knowledge
 {
+
+typedef struct ObjectType ObjectType;
+struct ObjectType
+{
+  std::string object_name;
+  geometry_msgs::msg::Point position;
+  geometry_msgs::msg::Quaternion orientation;
+};
 
 class PerceptionKnowledge : public rclcpp_lifecycle::LifecycleNode
 {
@@ -35,11 +46,12 @@ private:
   void getParams();
   void setSubscribers();
   void visionsMsgsCallback(
-    const vision_msgs::msg::BoundingBox3D::SharedPtr msg);
+    const vision_msgs::msg::Detection3DArray::SharedPtr msg);
 
-  rclcpp::Subscription<vision_msgs::msg::BoundingBox3D>::SharedPtr
+  rclcpp::Subscription<vision_msgs::msg::Detection3DArray>::SharedPtr
     visionMsgsSubscriber_;
-  std::string msgsType_, detectionsTopic_;
+  std::string msgsType_, detectionsTopic_, fameId_;
+  std::vector<ObjectType> visionDetections_;
 
   using CallbackReturnT =
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;

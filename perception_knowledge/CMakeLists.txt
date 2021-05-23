@@ -21,6 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(ros2_knowledge_graph REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(vision_msgs REQUIRED)
 find_package(gb_visual_detection_3d_msgs REQUIRED)
 
@@ -30,6 +31,7 @@ set(dependencies
   lifecycle_msgs
   ros2_knowledge_graph
   vision_msgs
+  geometry_msgs
   gb_visual_detection_3d_msgs
 )
 
